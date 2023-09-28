@@ -1,5 +1,5 @@
 <template>
-  <div class="container" style="margin-bottom: 200px;">
+  <div class="container" style="margin-bottom: 200px">
     <div class="row">
       <form @submit.prevent="handleSubmit">
         <div class="col-12 d-flex studentScore">
@@ -71,8 +71,8 @@
           <table class="table table-hover">
             <thead>
               <tr class="header-studentScore">
-                <th style="width: 150px;">Mã số sinh viên</th>
-                <th style="width: 20%;">Họ và tên</th>
+                <th style="width: 150px">Mã số sinh viên</th>
+                <th style="width: 20%">Họ và tên</th>
                 <th>
                   <div class="form-check">
                     <input
@@ -116,8 +116,10 @@
             </thead>
             <tbody>
               <tr v-for="(student, index) in studentList" :key="index">
-                <td style="width: 150px; text-align: center;">{{ student.studentId }}</td>
-                <td style="width: 20%;">{{ student.studentName }}</td>
+                <td style="width: 150px; text-align: center">
+                  {{ student.studentId }}
+                </td>
+                <td style="width: 20%">{{ student.studentName }}</td>
                 <td>
                   <input
                     type="number"
@@ -164,7 +166,6 @@
                 <th class="text-center">Quá trình</th>
                 <th class="text-center">Giữa kì</th>
                 <th class="text-center">Cuối kì</th>
-               
               </tr>
             </thead>
             <tbody>
@@ -174,12 +175,14 @@
                 <td class="text-center">
                   {{ formatDate(student.studentBithday) }}
                 </td>
-                <td
-                  class="text-center"
-                  v-for="(score, scoreIndex) in student.scoreDto"
-                  :key="scoreIndex"
-                >
-                  {{ score.scoreValue }}
+                <td class="text-center">
+                  {{ getScoreValue(student.scoreDto, "Quá trình") }}
+                </td>
+                <td class="text-center">
+                  {{ getScoreValue(student.scoreDto, "Giữa kì") }}
+                </td>
+                <td class="text-center">
+                  {{ getScoreValue(student.scoreDto, "Cuối kì") }}
                 </td>
               </tr>
             </tbody>
@@ -233,6 +236,34 @@ export default {
     exitHandleEdit() {
       this.isEditMode = false;
     },
+     handleSubjectChange(event) {
+      this.selectedSubject = event.target.value;
+    },
+    handleSemesterChange(event) {
+      this.selectedSemester = event.target.value;
+    },
+    getScoreValue(scoreDto, columnName) {
+      const score = scoreDto.find(
+        (item) => item.scoreColumnName === columnName
+      );
+      return score ? score.scoreValue : "";
+    },
+    formatDate(date) {
+      if (!date) return ""; // Tránh xử lý ngày null hoặc undefined
+
+      // Chuyển đối đối tượng ngày sang ngày
+      const formattedDate = new Date(date);
+
+      // Lấy thông tin về ngày, tháng và năm
+      const day = formattedDate.getDate();
+      const month = formattedDate.getMonth() + 1; // Lưu ý: Tháng bắt đầu từ 0
+      const year = formattedDate.getFullYear();
+
+      // Định dạng thành chuỗi "ngày/tháng/năm"
+      return `${day}/${month}/${year}`;
+    },
+
+    
     async fetchLecturerInfo() {
       try {
         const lecturerUsername = this.getUser.username;
@@ -275,12 +306,6 @@ export default {
         return null;
       }
     },
-    handleSubjectChange(event) {
-      this.selectedSubject = event.target.value;
-    },
-    handleSemesterChange(event) {
-      this.selectedSemester = event.target.value;
-    },
     async handleSubmit(event) {
       event.preventDefault();
 
@@ -305,24 +330,7 @@ export default {
         console.error(error);
       }
     },
-    getScoreValue(scoreDto, columnName) {
-      const score = scoreDto.find(item => item.scoreColumnName === columnName);
-      return score ? score.scoreValue : "";
-    },
-    formatDate(date) {
-      if (!date) return ""; // Tránh xử lý ngày null hoặc undefined
-
-      // Chuyển đối đối tượng ngày sang ngày
-      const formattedDate = new Date(date);
-
-      // Lấy thông tin về ngày, tháng và năm
-      const day = formattedDate.getDate();
-      const month = formattedDate.getMonth() + 1; // Lưu ý: Tháng bắt đầu từ 0
-      const year = formattedDate.getFullYear();
-
-      // Định dạng thành chuỗi "ngày/tháng/năm"
-      return `${day}/${month}/${year}`;
-    },
+    
   },
 };
 </script>
